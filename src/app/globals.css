@@ -174,4 +174,58 @@
     opacity: 0.3;
     transition: background-color 0.3s ease, opacity 0.3s ease;
   }
+
+  .tree,
+  .tree ul,
+  .tree li {
+    position: relative;
+  }
+
+  .tree-list {
+    list-style: none;
+    padding-left: 2rem;
+    /* 32px */
+    margin: 0;
+  }
+
+  .tree-item::before,
+  .tree-item::after {
+    content: "";
+    position: absolute;
+    left: -0.75rem;
+    /* -12px */
+  }
+
+  /* Horizontal lines */
+  .tree-item::before {
+    border-top: 1px solid #4ade80;
+    /* green-400 */
+    top: 0.5625rem;
+    /* 9px */
+    width: 0.5rem;
+    /* 8px */
+    height: 0;
+  }
+
+  /* Vertical lines */
+  .tree-item::after {
+    border-left: 1px solid #4ade80;
+    /* green-400 */
+    height: 100%;
+    width: 0;
+    top: 0.125rem;
+    /* 2px */
+  }
+
+  /* Last child gets shorter vertical line */
+  .tree-list>.tree-item:last-child::after {
+    height: 0.5rem;
+    /* 8px */
+  }
+
+  /* Remove lines from root level */
+  .tree>.tree-list>.tree-item::before,
+  .tree>.tree-list>.tree-item::after {
+    display: none;
+  }
 }
