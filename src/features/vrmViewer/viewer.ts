@@ -17,6 +17,7 @@ export class Viewer {
   private _scene: THREE.Scene;
   private _camera?: THREE.PerspectiveCamera;
   private _cameraControls?: OrbitControls;
+  private _mousePosition: THREE.Vector2 = new THREE.Vector2();
 
   constructor() {
     this.isReady = false;
@@ -62,6 +63,9 @@ export class Viewer {
       if (vrma) this.model.loadAnimation(vrma);
       console.log("VRM loaded", vrma);
 
+      // Enable idle look-at behavior
+      this.model.enableIdleLookAt(true);
+
       // HACK: アニメーションの原点がずれているので再生後にカメラ位置を調整する
       requestAnimationFrame(() => {
         this.resetCamera();
@@ -83,6 +87,7 @@ export class Viewer {
     const parentElement = canvas.parentElement;
     const width = parentElement?.clientWidth || canvas.width;
     const height = parentElement?.clientHeight || canvas.height;
+    
     // renderer
     this._renderer = new THREE.WebGLRenderer({
       canvas: canvas,
@@ -95,8 +100,7 @@ export class Viewer {
     // camera
     this._camera = new THREE.PerspectiveCamera(20.0, width / height, 0.1, 20.0);
     this._camera.position.set(0, 1.3, 1.5);
-    this._cameraControls?.target.set(0, 1.3, 0);
-    this._cameraControls?.update();
+
     // camera controls
     this._cameraControls = new OrbitControls(
       this._camera,
@@ -112,13 +116,49 @@ export class Viewer {
     // Disable zoom in/out
     this._cameraControls.enableZoom = false;
     
+    this._cameraControls.target.set(0, 1.3, 0);
     this._cameraControls.update();
+
+    // Add mouse tracking for look-at
+    this.setupMouseTracking(canvas);
 
     window.addEventListener("resize", () => {
       this.resize();
     });
+    
     this.isReady = true;
     this.update();
+  }
+
+  /**
+   * Setup mouse tracking for look-at functionality
+   */
+  private setupMouseTracking(canvas: HTMLCanvasElement) {
+    const handleMouseMove = (event: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      this._mousePosition.x = event.clientX - rect.left;
+      this._mousePosition.y = event.clientY - rect.top;
+
+      // Update VRM look-at to follow mouse
+      if (this.model && this._camera) {
+        this.model.lookAtScreenPosition(
+          this._mousePosition.x,
+          this._mousePosition.y,
+          this._camera,
+          2.5 // Distance for look-at target
+        );
+      }
+    };
+
+    const handleMouseLeave = () => {
+      // When mouse leaves, look at camera instead
+      if (this.model && this._camera) {
+        this.model.lookAtCamera(this._camera);
+      }
+    };
+
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
   }
 
   /**
@@ -160,9 +200,87 @@ export class Viewer {
     }
   }
 
+  /**
+   * Enable/disable look-at mouse tracking
+   */
+  public setMouseLookAtEnabled(enabled: boolean) {
+    if (this.model) {
+      this.model.setLookAtEnabled(enabled);
+    }
+  }
+
+  /**
+   * Make the VRM look at a specific world position
+   */
+  public setLookAtPosition(position: THREE.Vector3) {
+    if (this.model) {
+      this.model.lookAt(position);
+    }
+  }
+
+  /**
+   * Make the VRM look at the camera
+   */
+  public lookAtCamera() {
+    if (this.model && this._camera) {
+      this.model.lookAtCamera(this._camera);
+    }
+  }
+
+  /**
+   * Trigger a specific animation (like greeting when user interacts)
+   */
+  public async playGreetingAnimation() {
+    if (!this.model) return;
+    
+    try {
+      const greetingAnimation = await loadVRMAnimation("./VRMA_02.vrma");
+      console.log("Greeting animation loaded:", this.model.vrm?.scene);
+      if (greetingAnimation) {
+        await this.model.playOneTimeAnimation(greetingAnimation, () => {
+          console.log("Greeting animation completed, back to idle!");
+          this.setMouseLookAtEnabled(true);
+        });
+      }
+    } catch (error) {
+      console.warn("Failed to load greeting animation:", error);
+    }
+  }
+
+  /**
+   * Play any one-time animation by filename - will automatically return to idle
+   */
+  public async playAnimation(filename: string, onComplete?: () => void) {
+    if (!this.model) return;
+    
+    try {
+      const animation = await loadVRMAnimation(filename);
+      if (animation) {
+        await this.model.playOneTimeAnimation(animation, () => {
+          console.log(`Animation ${filename} completed, returned to idle!`);
+          onComplete?.();
+        });
+      }
+    } catch (error) {
+      console.warn(`Failed to load animation ${filename}:`, error);
+    }
+  }
+
+
+  /**
+   * Reset VRM position to center (fix positioning issues)
+   */
+  public resetVRMPosition() {
+    if (this.model) {
+      this.model.resetPosition();
+    }
+  }
+
+
   public update = () => {
     requestAnimationFrame(this.update);
     const delta = this._clock.getDelta();
+    
     // update vrm components
     if (this.model) {
       this.model.update(delta);

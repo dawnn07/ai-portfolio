@@ -11,6 +11,12 @@ export default function VrmViewer() {
     (canvas: HTMLCanvasElement) => {
       if (canvas) {
         viewer.setup(canvas);
+        
+         setTimeout(() => {
+          viewer.setMouseLookAtEnabled(false);
+          viewer.playGreetingAnimation();
+        }, 1000);
+
         viewer.loadVrm("./model2.vrm");
 
         // Drag and DropでVRMを差し替え
@@ -45,7 +51,8 @@ export default function VrmViewer() {
 
   return (
     <div className={"absolute top-0 left-0 w-screen h-[100svh] -z-10"}>
-      <canvas ref={canvasRef} className={"h-full w-full"}></canvas>
+      <canvas ref={canvasRef} 
+      className={"h-full w-full"}></canvas>
     </div>
   );
 }
