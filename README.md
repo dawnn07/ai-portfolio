@@ -16,7 +16,7 @@ An interactive AI portfolio featuring a 3D VRM avatar with advanced look-at func
 
 ## Technology Stack
 
-- **Framework**: Next.js 14 with App Router
+- **Framework**: Next.js 15 with App Router
 - **3D Graphics**: Three.js
 - **VRM Support**: @pixiv/three-vrm
 - **Styling**: Tailwind CSS
