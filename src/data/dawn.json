@@ -1,0 +1,47 @@
+[
+    {
+        "id": "1",
+        "category": "about",
+        "document": "Dawn is a Full Stack Developer passionate about creating elegant solutions with modern web technologies."
+    },
+    {
+        "id": "2",
+        "category": "skills",
+        "document": "Proficient in JavaScript, TypeScript, React, Next.js, Node.js, Express and NestJS."
+    },
+    {
+        "id": "3",
+        "category": "experience",
+        "document": "Worked at ATOM Solution as a Fullstack Developer from 2023 to 2025."
+    },
+    {
+        "id": "4",
+        "category": "projects",
+        "document": "Esportify - Full-featured esports management platform designed to help organizers create, run, and scale competitive gaming tournaments"
+    },
+    {
+        "id": "5",
+        "category": "projects",
+        "document": "AI Portfolio - An AI-powered portfolio website that leverages natural language processing and machine learning to provide an interactive and personalized user experience."
+    },
+    {
+        "id": "6",
+        "category": "projects",
+        "document": "ChroniQ - The AI-powered todo app that helps you manage your tasks efficiently and effectively."
+    },
+    {
+        "id": "7",
+        "category": "projects",
+        "document": "Dawn-Blog - A modern, full-stack blog application built with Next.js, TypeScript, Prisma, and more."
+    },
+    {
+        "id": "8",
+        "category": "education",
+        "document": "Bachelor's degree in Software Engineering from FPT University, graduated in 2025."
+    },
+    {
+        "id": "9",
+        "category": "contact",
+        "document": "Email: haidangdavid.work@gmail.com, GitHub: https://github.com/dawnn07, LinkedIn: https://www.linkedin.com/in/dawnn07/"
+    }
+]

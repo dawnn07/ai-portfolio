@@ -82,7 +82,6 @@ const TerminalChat = () => {
         alert("Cohere API Key is not set in environment variables.");
         return;
       }
-
       const newMessage = text.trim();
       if (!newMessage) return;
 

@@ -1,10 +1,11 @@
-import { Folder, Github, Info, RotateCcw } from "lucide-react";
+import { Folder, Github, Info } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
 import { Clock } from "./clock";
 import Link from "next/link";
 import InfoModal from "./info-modal";
 import ProjectModal from "./project-modal";
+import { ReloadToggle } from "./reload-toggle";
 
 export async function Navbar() {
 
@@ -36,11 +37,7 @@ export async function Navbar() {
                 </div>
                 <Clock />
                 <div className="flex items-center space-x-2 flex-1 justify-end">
-                    <Button
-                        variant="ghost" size="icon">
-                        <RotateCcw />
-                        <span className="sr-only">Refresh</span>
-                    </Button>
+                    <ReloadToggle />
                     <ModeToggle />
                 </div>
             </div>

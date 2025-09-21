@@ -3,6 +3,7 @@ import { Comfortaa } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
+import Head from "next/head";
 
 
 const comfortaa = Comfortaa({
@@ -13,6 +14,11 @@ const comfortaa = Comfortaa({
 export const metadata: Metadata = {
   title: "Dawn Portfolio",
   description: "A portfolio website showcasing projects and skills.",
+   openGraph: {
+    title: "Dawn Portfolio",
+    description:
+      "A showcase of my projects and skills, powered by AI.",
+  },
 };
 
 export default function RootLayout({
@@ -22,6 +28,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+       <Head>
+        <title>Dawn Portfolio</title>
+        <meta
+          name="description"
+          content="A showcase of my projects and skills, powered by AI."
+        />
+        <meta property="og:image" content="./opengraph-image.png"></meta>
+        {/* <meta property="og:url" content="https://dashboard.cellprotocol.science"></meta> */}
+        <meta
+          property="og:title"
+          content="Dawn Portfolio - A portfolio website showcasing projects and skills."
+        ></meta>
+        {/* <meta property="og:site_name" content="https://dashboard.cellprotocol.science"></meta> */}
+        <meta
+          property="og:description"
+          content="A showcase of my projects and skills, powered by AI."
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <body
         className={`${comfortaa.variable} font-comfortaa antialiased`}
       >
@@ -31,10 +56,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex min-h-screen flex-col">
-            <Navbar />
             {children}
-          </div>
         </ThemeProvider>
       </body>
     </html>
