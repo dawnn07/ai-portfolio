@@ -4,6 +4,9 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { VRMAnimation } from "../../lib/VRMAnimation/VRMAnimation";
 import { VRMLookAtSmootherLoaderPlugin } from "@/lib/VRMLookAtSmootherLoaderPlugin/VRMLookAtSmootherLoaderPlugin";
 import { loadVRMAnimation } from "@/lib/VRMAnimation/loadVRMAnimation";
+import { EmoteController } from "../emoteController/emoteController";
+import { LipSync } from "../lipSync/lipSync";
+import { Screenplay } from "../messages/messages";
 
 /**
  * 3Dキャラクターを管理するクラス
@@ -11,7 +14,7 @@ import { loadVRMAnimation } from "@/lib/VRMAnimation/loadVRMAnimation";
 export class Model {
   public vrm?: VRM | null;
   public mixer?: THREE.AnimationMixer;
-  // public emoteController?: EmoteController;
+  public emoteController?: EmoteController;
 
   private _lookAtTargetParent: THREE.Object3D;
   private _lookAtTarget: THREE.Object3D;
@@ -22,7 +25,7 @@ export class Model {
   private _introAnimationAction?: THREE.AnimationAction;
   private _idleAnimationAction?: THREE.AnimationAction;
   private _originalPosition: THREE.Vector3;
-  // private _lipSync?: LipSync;
+  private _lipSync?: LipSync;
 
   constructor(lookAtTargetParent: THREE.Object3D) {
     this._lookAtTargetParent = lookAtTargetParent;
@@ -35,7 +38,7 @@ export class Model {
      // Store original VRM position for position reset
     this._originalPosition = new THREE.Vector3(0, 0, 0);
     
-    // this._lipSync = new LipSync(new AudioContext());
+    this._lipSync = new LipSync(new AudioContext());
   }
 
   public async loadVRM(url: string): Promise<void> {
@@ -64,7 +67,7 @@ export class Model {
       vrm.lookAt.target = this._lookAtTarget;
     }
 
-    // this.emoteController = new EmoteController(vrm, this._lookAtTargetParent);
+    this.emoteController = new EmoteController(vrm, this._lookAtTargetParent);
   }
 
   public unLoadVrm() {
@@ -356,14 +359,14 @@ export class Model {
   /**
    * 音声を再生し、リップシンクを行う
    */
-  // public async speak(buffer: ArrayBuffer, screenplay: Screenplay) {
-  //   this.emoteController?.playEmotion(screenplay.expression);
-  //   await new Promise((resolve) => {
-  //     this._lipSync?.playFromArrayBuffer(buffer, () => {
-  //       resolve(true);
-  //     });
-  //   });
-  // }
+  public async speak(buffer: ArrayBuffer, screenplay: Screenplay) {
+    this.emoteController?.playEmotion(screenplay.expression);
+    await new Promise((resolve) => {
+      this._lipSync?.playFromArrayBuffer(buffer, () => {
+        resolve(true);
+      });
+    });
+  }
 
   public update(delta: number): void {
     // Update look-at target smoothly
@@ -381,12 +384,12 @@ export class Model {
       }
     }
 
-    // if (this._lipSync) {
-    //   const { volume } = this._lipSync.update();
-    //   this.emoteController?.lipSync("aa", volume);
-    // }
+    if (this._lipSync) {
+      const { volume } = this._lipSync.update();
+      this.emoteController?.lipSync("aa", volume);
+    }
 
-    // this.emoteController?.update(delta);
+    this.emoteController?.update(delta);
     this.mixer?.update(delta);
     this.vrm?.update(delta);
   }
